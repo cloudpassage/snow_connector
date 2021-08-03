@@ -1,3 +1,5 @@
 *.idea
 config.yaml
 production.log
+__pycache__/
+*.pyc

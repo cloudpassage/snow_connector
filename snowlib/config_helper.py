@@ -27,6 +27,10 @@ class ConfigHelper(object):
         self.snow_api_user = os.getenv('SNOW_API_USER') or self.config.get('SNOW_API_USER')
         self.snow_api_pwd = os.getenv('SNOW_API_PWD') or self.config.get('SNOW_API_PWD')
         self.snow_api_url = os.getenv('SNOW_API_URL') or self.config.get('SNOW_API_URL')
+        self.table = os.getenv('TABLE') or self.config.get('TABLE')
+        self.type_field = os.getenv('TYPE_FIELD') or self.config.get('TYPE_FIELD')
+        self.source_field = os.getenv('SOURCE_FIELD') or self.config.get('SOURCE_FIELD')
+        self.issue_id_field = os.getenv('ISSUE_ID_FIELD') or self.config.get('ISSUE_ID_FIELD')
 
 
     def validate_config(self):

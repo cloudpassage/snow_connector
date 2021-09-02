@@ -34,6 +34,10 @@ Define the following environment variables:
 | SNOW_API_USER       | admin        | ServiceNow Username   |
 | SNOW_API_PWD      | password         |                 |
 | SNOW_API_URL        | https://dev10394.service-now.com/ | SNOW instance URL |
+| TABLE | sn_si_incident |   ServiceNow Table to push issues into              |
+| TYPE_FIELD       | alert_sensor      | ServiceNow field for issue type   |
+| SOURCE_FIELD      | contact_type         |   ServiceNow field for issue source (CloudPassage)              |
+| ISSUE_ID_FIELD        | vendor_reference | ServiceNow field for issue ID|
 
 
 ### Setup routing rules

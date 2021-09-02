@@ -2,16 +2,16 @@ import requests
 import json
 import urllib
 import xmltodict
-from pprint import pprint
 
 from .logger import Logger
 
 
 class Snow(object):
-    def __init__(self, usr, pwd, url, rule):
-        self.username = usr
-        self.password = pwd
-        self.url = url
+    def __init__(self, config, rule):
+        self.config = config
+        self.username = config.snow_api_user
+        self.password = config.snow_api_pwd
+        self.url = config.snow_api_url
         self.log = Logger(rule=rule)
         return
 
@@ -24,7 +24,7 @@ class Snow(object):
 
 
     def create_new_issue(self, halo_issue):
-        url_final = self.url + 'api/now/table/sn_si_incident'
+        url_final = self.url + f'api/now/table/{self.config.table}'
         formatted_issue = json.dumps(halo_issue, indent=2)
 
         # Set proper headers
@@ -39,10 +39,10 @@ class Snow(object):
                  f"<entry>"
                  f"<short_description>{halo_issue['asset_name']}: {halo_issue['name']}</short_description>"
                  f"<description>{formatted_issue}</description>"
-                 f"<alert_sensor>{halo_issue['type']}</alert_sensor>"
-                 f"<contact_type>CloudPassage</contact_type>"
+                 f"<{self.config.type_field}>{halo_issue['type']}</{self.config.type_field}>"
+                 f"<{self.config.source_field}>CloudPassage</{self.config.source_field}>"
                  f"<cmdb_ci>{halo_issue['asset_name']}</cmdb_ci>"
-                 f"<vendor_reference>{halo_issue['id']}</vendor_reference>"
+                 f"<{self.config.issue_id_field}>{halo_issue['id']}</{self.config.issue_id_field}>"
                  f"</entry>"
                  f"</request>"
         )
@@ -60,8 +60,8 @@ class Snow(object):
         issue_id = halo_issue["id"]
 
         headers = {"Accept":"application/xml"}
-        params = {"vendor_reference": issue_id, "active": "true"}
-        url_final = self.url + 'api/now/table/sn_si_incident?' + urllib.parse.urlencode(params)
+        params = {self.config.issue_id_field: issue_id, "active": "true"}
+        url_final = self.url + f'api/now/table/{self.config.table}?' + urllib.parse.urlencode(params)
 
         response = requests.get(url_final, auth=(self.username, self.password), headers=headers)
 
@@ -76,8 +76,8 @@ class Snow(object):
 
 
     def update_all_issues(self, halo):
-        url = self.url + 'api/now/table/sn_si_incident?'
-        params = {"contact_type": "CloudPassage", "active": "true"}
+        url = self.url + f'api/now/table/{self.config.table}?'
+        params = {self.config.source_field: "CloudPassage", "active": "true"}
         url_final = url + urllib.parse.urlencode(params)
 
         headers = {"Accept":"application/xml"}
@@ -106,7 +106,7 @@ class Snow(object):
         halo_issues = []
         issue_sys_map = {}
         for snow_issue in snow_issues:
-            halo_issue = halo.issue.describe(snow_issue['vendor_reference'])
+            halo_issue = halo.issue.describe(snow_issue[self.config.issue_id_field])
             halo_issues.append(halo_issue['issue'])
             issue_sys_map[halo_issue['issue']['id']] = snow_issue['sys_id']
         return halo_issues, issue_sys_map
@@ -114,7 +114,7 @@ class Snow(object):
 
 
     def update_issue_in_snow(self, halo_issue, issue_sys_map):
-        url = self.url + f'api/now/table/sn_si_incident/{issue_sys_map[halo_issue["id"]]}'
+        url = self.url + f'api/now/table/{self.config.table}/{issue_sys_map[halo_issue["id"]]}'
         headers = {"Content-Type":"application/xml", "Accept":"application/xml"}
 
         formatted_issue = json.dumps(halo_issue, indent=2)
@@ -131,10 +131,10 @@ class Snow(object):
                  f"<entry>"
                  f"<short_description>{halo_issue['asset_name']}: {halo_issue['name']}</short_description>"
                  f"<description>{formatted_issue}</description>"
-                 f"<alert_sensor>{halo_issue['type']}</alert_sensor>"
-                 f"<contact_type>CloudPassage</contact_type>"
+                 f"<{self.config.type_field}>{halo_issue['type']}</{self.config.type_field}>"
+                 f"<{self.config.source_field}>CloudPassage</{self.config.source_field}>"
                  f"<cmdb_ci>{halo_issue['asset_name']}</cmdb_ci>"
-                 f"<vendor_reference>{halo_issue['id']}</vendor_reference>"
+                 f"<{self.config.issue_id_field}>{halo_issue['id']}</{self.config.issue_id_field}>"
                  f"{status}"
                  f"</entry>"
                  f"</request>"

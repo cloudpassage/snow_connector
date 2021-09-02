@@ -2,7 +2,6 @@ import os
 import re
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from pprint import pprint
 
 import cloudpassage
 
@@ -71,7 +70,6 @@ class Halo(object):
             cve_ids = set(cve for issue in issues for cve in issue.get("cve_ids", []))
             cve_future_to_cve = {executor.submit(self.cve_detail.describe, cve_id): cve_id for cve_id in cve_ids}
             cve_dict = self.get_cve_dict(cve_future_to_cve)
-            pprint(cve_dict)
             for issue in issues:
                 if issue["extended_attributes"] and "cve_info" in issue["extended_attributes"]:
                     for cve in issue["extended_attributes"]["cve_info"]:

@@ -24,7 +24,7 @@ def main():
 
         # Print initial stats
         logger.info(f"Posting {len(halo_issues)} Halo issues")
-        snow = snowlib.Snow(config.snow_api_user, config.snow_api_pwd, config.snow_api_url, rule)
+        snow = snowlib.Snow(config, rule)
 
         if halo_issues:
             snow.push_halo_issues(halo_issues)

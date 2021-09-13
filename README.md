@@ -5,7 +5,7 @@ Synchronize Halo issues with ServiceNow
 ## What it does
 
 This tool filters issues discovered in Halo using issue attributes and then routes those issues to ServiceNow
-specified in routing configuration files. These issues are then continuously synced.
+specified in routing configuration files.
 
 
 ## Requirements
